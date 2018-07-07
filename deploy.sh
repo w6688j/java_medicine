@@ -18,7 +18,7 @@ echo "============删除旧的ROOT.war==================="
 rm /developer/apache-tomcat-7.0.73/webapps/ROOT.war
 
 echo "======拷贝编译出来的war包到tomcat下-ROOT.war======="
-cp /developer/git-repository/java_medicine/target/java_medicine.war  /developer/apache-tomcat-7.0.73/webapps/ROOT.war
+cp /developer/git-repository/java_medicine/target/medicine.war  /developer/apache-tomcat-7.0.73/webapps/ROOT.war
 
 echo "============删除tomcat下旧的ROOT文件夹============="
 rm -rf /developer/apache-tomcat-7.0.73/webapps/ROOT

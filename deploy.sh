@@ -15,7 +15,7 @@ echo "===========编译并跳过单元测试===================="
 mvn clean package -Dmaven.test.skip=true
 
 echo "============删除旧的ROOT.war==================="
-rm /developer/apache-tomcat-7.0.73/webapps/ROOT.war
+rm -rf /developer/apache-tomcat-7.0.73/webapps/ROOT.war
 
 echo "======拷贝编译出来的war包到tomcat下-ROOT.war======="
 cp /developer/git-repository/java_medicine/target/medicine.war  /developer/apache-tomcat-7.0.73/webapps/ROOT.war

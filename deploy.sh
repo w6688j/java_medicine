@@ -1,3 +1,4 @@
+#!/bin/sh
 echo "===========进入git项目medicine目录============="
 cd /developer/git-repository/java_medicine
 

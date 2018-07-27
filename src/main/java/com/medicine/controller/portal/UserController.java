@@ -2,6 +2,7 @@ package com.medicine.controller.portal;
 
 import com.google.common.collect.Maps;
 import com.medicine.common.ServerResponse;
+import com.medicine.pojo.User;
 import com.medicine.service.IFileService;
 import com.medicine.service.IUserService;
 import com.medicine.util.PropertiesUtil;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 /**
@@ -51,5 +53,11 @@ public class UserController {
     @ResponseBody
     public ServerResponse<String> checkValid(String str, String type) {
         return iUserService.checkValid(str, type);
+    }
+
+    @RequestMapping(value = "is_login.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<String> isLogin(HttpSession session) {
+        return iUserService.isLogin(session);
     }
 }

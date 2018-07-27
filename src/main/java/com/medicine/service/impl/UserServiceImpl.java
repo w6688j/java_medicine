@@ -10,6 +10,7 @@ import com.medicine.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.util.UUID;
 
 /**
@@ -196,5 +197,14 @@ public class UserServiceImpl implements IUserService {
             return ServerResponse.createBySuccess();
         }
         return ServerResponse.createByError();
+    }
+
+    public ServerResponse isLogin(HttpSession session) {
+        User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
+        if (currentUser == null) {
+            return ServerResponse.createByErrorMessage("用户未登录");
+        } else {
+            return ServerResponse.createBySuccess("用户已登录");
+        }
     }
 }

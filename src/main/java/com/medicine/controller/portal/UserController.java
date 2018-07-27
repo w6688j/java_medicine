@@ -63,9 +63,9 @@ public class UserController {
         return iUserService.checkValid(str, type);
     }
 
-    @RequestMapping("upload.do")
+    @RequestMapping("upload2.do")
     @ResponseBody
-    public ServerResponse upload(@RequestParam(value = "upload_file", required = false) MultipartFile file, HttpServletRequest request) {
+    public ServerResponse upload2(@RequestParam(value = "upload_file", required = false) MultipartFile file, HttpServletRequest request) {
         String path = request.getSession().getServletContext().getRealPath("upload");
         String targetFileName = iFileService.upload(file, path);
         String url = PropertiesUtil.getProperty("ftp.server.http.prefix") + targetFileName;
@@ -75,5 +75,11 @@ public class UserController {
         fileMap.put("url", url);
 
         return ServerResponse.createBySuccess(fileMap);
+    }
+
+    @RequestMapping("upload.do")
+    @ResponseBody
+    public ServerResponse upload() {
+        return ServerResponse.createBySuccess();
     }
 }

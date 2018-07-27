@@ -33,6 +33,12 @@ public class UserController {
     @Autowired
     private IFileService iFileService;
 
+    @RequestMapping(value = "is_login.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<String> isLogin(HttpSession session) {
+        return iUserService.isLogin(session);
+    }
+
     @RequestMapping(value = "login.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<User> login(@RequestBody User user, HttpSession session) {
@@ -42,6 +48,19 @@ public class UserController {
         }
 
         return response;
+    }
+
+    @RequestMapping(value = "logout.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<String> logout(HttpSession session) {
+        session.removeAttribute(Const.CURRENT_USER);
+        return ServerResponse.createBySuccess();
+    }
+
+    @RequestMapping(value = "check_valid.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> checkValid(String str, String type) {
+        return iUserService.checkValid(str, type);
     }
 
     @RequestMapping("upload.do")
@@ -56,17 +75,5 @@ public class UserController {
         fileMap.put("url", url);
 
         return ServerResponse.createBySuccess(fileMap);
-    }
-
-    @RequestMapping(value = "check_valid.do", method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<String> checkValid(String str, String type) {
-        return iUserService.checkValid(str, type);
-    }
-
-    @RequestMapping(value = "is_login.do", method = RequestMethod.GET)
-    @ResponseBody
-    public ServerResponse<String> isLogin(HttpSession session) {
-        return iUserService.isLogin(session);
     }
 }

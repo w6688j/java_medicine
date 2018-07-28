@@ -76,10 +76,4 @@ public class UserController {
 
         return ServerResponse.createBySuccess(fileMap);
     }
-
-    @RequestMapping("upload.do")
-    @ResponseBody
-    public ServerResponse upload() {
-        return ServerResponse.createBySuccess();
-    }
 }

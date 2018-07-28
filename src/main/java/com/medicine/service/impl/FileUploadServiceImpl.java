@@ -102,7 +102,7 @@ public class FileUploadServiceImpl implements IFileUploadService {
             }
 
             String fileName = this.getNewFileName(fileType);
-            File toFile = new File(uploadDir.getPath() + "\\" + fileName);
+            File toFile = new File(uploadDir.getPath() + "/" + fileName);
             Files.copy(file, toFile);
 
             String parentPath = file.getParent();

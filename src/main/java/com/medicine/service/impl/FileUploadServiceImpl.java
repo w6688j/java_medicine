@@ -162,8 +162,6 @@ public class FileUploadServiceImpl implements IFileUploadService {
         User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
         String fileName = this.getFileNameExceptFileType(file.getName()) + fileType;
 
-        System.out.println(fileName);
-
         uploadFile.setUserId(currentUser.getId());
         uploadFile.setFileName(fileName);
         uploadFile.setPath(toFile.getPath());
@@ -171,10 +169,8 @@ public class FileUploadServiceImpl implements IFileUploadService {
 
         int resultCount = uploadFileMapper.insert(uploadFile);
         if (resultCount == 0) {
-            System.out.println("数据插入失败");
             logger.error("数据插入失败");
         } else {
-            System.out.println("数据插入成功");
             logger.error("数据插入成功");
         }
     }

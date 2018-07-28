@@ -1,16 +1,22 @@
 package com.medicine.service.impl;
 
 import com.google.common.io.Files;
+import com.medicine.common.Const;
 import com.medicine.common.ServerResponse;
 import com.medicine.controller.portal.request.MultipartFileParam;
+import com.medicine.dao.UploadFileMapper;
+import com.medicine.pojo.UploadFile;
+import com.medicine.pojo.User;
 import com.medicine.service.IFileUploadService;
 import com.medicine.util.MultipartFileUploadUtil;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.text.SimpleDateFormat;
@@ -24,8 +30,11 @@ public class FileUploadServiceImpl implements IFileUploadService {
 
     private static AtomicLong counter = new AtomicLong(0L);
 
+    @Autowired
+    private UploadFileMapper uploadFileMapper;
+
     @Override
-    public ServerResponse<String> upload(HttpServletRequest request) {
+    public ServerResponse<String> upload(HttpServletRequest request, HttpSession session) {
         String prefix = "req_count:" + counter.incrementAndGet() + ":";
         System.out.println(prefix + "start !!!");
         //使用 工具类解析相关参数，工具类代码见下面
@@ -35,8 +44,7 @@ public class FileUploadServiceImpl implements IFileUploadService {
             System.out.println(prefix + "chunk= " + param.getChunk());
             System.out.println(prefix + "FileName= " + param.getFileName());
 
-            String fileName = param.getFileName();
-            String fileType = fileName.substring(fileName.lastIndexOf("."), fileName.length());
+            String fileType = this.getFileType(param.getFileName());
 
             //这个必须与前端设定的值一致
             long chunkSize = 2048000;
@@ -81,13 +89,13 @@ public class FileUploadServiceImpl implements IFileUploadService {
                 accessConfFile.close();
 
                 if (isComplete == Byte.MAX_VALUE) {
-                    this.handleUploadedFile(tmpFile, fileType);
+                    this.handleUploadedFile(tmpFile, fileType, session);
                     System.out.println(prefix + "upload complete !!");
                 }
             }
             System.out.println(prefix + "end !!!");
 
-            return ServerResponse.createBySuccess("上传成功" + param.getFileName());
+            return ServerResponse.createBySuccess(param.getFileName() + "上传成功");
         } catch (Exception e) {
             logger.error("上传失败", e);
 
@@ -95,7 +103,7 @@ public class FileUploadServiceImpl implements IFileUploadService {
         }
     }
 
-    private void handleUploadedFile(File file, String fileType) {
+    private void handleUploadedFile(File file, String fileType, HttpSession session) {
         try {
             File uploadDir = new File(this.getNewFileDir());
             if (!uploadDir.exists()) {
@@ -110,6 +118,9 @@ public class FileUploadServiceImpl implements IFileUploadService {
 
             // 删除临时文件目录
             this.deleteDir((new File(parentPath)));
+
+            // 保存上传文件记录到mysql
+            this.saveMysqlData(file, toFile, fileType, session);
 
         } catch (Exception e) {
             logger.error("移动文件失败", e);
@@ -144,5 +155,35 @@ public class FileUploadServiceImpl implements IFileUploadService {
         }
         // 目录此时为空，可以删除
         return dir.delete();
+    }
+
+    private void saveMysqlData(File file, File toFile, String fileType, HttpSession session) {
+        UploadFile uploadFile = new UploadFile();
+        User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
+        String fileName = this.getFileNameExceptFileType(file.getName()) + fileType;
+
+        System.out.println(fileName);
+
+        uploadFile.setUserId(currentUser.getId());
+        uploadFile.setFileName(fileName);
+        uploadFile.setPath(toFile.getPath());
+        uploadFile.setSize((int) toFile.length());
+
+        int resultCount = uploadFileMapper.insert(uploadFile);
+        if (resultCount == 0) {
+            System.out.println("数据插入失败");
+            logger.error("数据插入失败");
+        } else {
+            System.out.println("数据插入成功");
+            logger.error("数据插入成功");
+        }
+    }
+
+    private String getFileType(String fileName) {
+        return fileName.substring(fileName.lastIndexOf("."), fileName.length());
+    }
+
+    private String getFileNameExceptFileType(String fileName) {
+        return fileName.substring(0, fileName.lastIndexOf("."));
     }
 }

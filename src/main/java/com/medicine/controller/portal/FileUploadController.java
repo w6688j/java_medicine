@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * Created by Administrator on 2018/1/10/010.
@@ -22,8 +23,8 @@ public class FileUploadController {
 
     @RequestMapping(value = "upload.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<String> upload(HttpServletRequest request) {
+    public ServerResponse<String> upload(HttpServletRequest request, HttpSession session) {
 
-        return iFileUploadService.upload(request);
+        return iFileUploadService.upload(request, session);
     }
 }

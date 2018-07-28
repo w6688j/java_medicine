@@ -1,7 +1,9 @@
 package com.medicine.service;
 
+import com.medicine.common.ServerResponse;
+
 import javax.servlet.http.HttpServletRequest;
 
 public interface IFileUploadService {
-    String upload(HttpServletRequest request);
+    ServerResponse<String> upload(HttpServletRequest request);
 }

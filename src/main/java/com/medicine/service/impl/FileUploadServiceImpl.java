@@ -1,6 +1,7 @@
 package com.medicine.service.impl;
 
 import com.google.common.io.Files;
+import com.medicine.common.ServerResponse;
 import com.medicine.controller.portal.request.MultipartFileParam;
 import com.medicine.service.IFileUploadService;
 import com.medicine.util.MultipartFileUploadUtil;
@@ -24,7 +25,7 @@ public class FileUploadServiceImpl implements IFileUploadService {
     private static AtomicLong counter = new AtomicLong(0L);
 
     @Override
-    public String upload(HttpServletRequest request) {
+    public ServerResponse<String> upload(HttpServletRequest request) {
         String prefix = "req_count:" + counter.incrementAndGet() + ":";
         System.out.println(prefix + "start !!!");
         //使用 工具类解析相关参数，工具类代码见下面
@@ -86,7 +87,7 @@ public class FileUploadServiceImpl implements IFileUploadService {
             }
             System.out.println(prefix + "end !!!");
 
-            return param.getFileName();
+            return ServerResponse.createBySuccess("上传成功" + param.getFileName());
         } catch (Exception e) {
             logger.error("上传失败", e);
 
@@ -106,8 +107,10 @@ public class FileUploadServiceImpl implements IFileUploadService {
             Files.copy(file, toFile);
 
             String parentPath = file.getParent();
-            System.out.println("path" + parentPath);
+
+            // 删除临时文件目录
             this.deleteDir((new File(parentPath)));
+
         } catch (Exception e) {
             logger.error("移动文件失败", e);
         }

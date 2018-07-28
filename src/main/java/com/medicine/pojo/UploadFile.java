@@ -7,6 +7,8 @@ public class UploadFile {
 
     private Integer userId;
 
+    private String userName;
+
     private String fileName;
 
     private String path;
@@ -85,5 +87,13 @@ public class UploadFile {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

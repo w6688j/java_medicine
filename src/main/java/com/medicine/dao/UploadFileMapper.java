@@ -2,6 +2,8 @@ package com.medicine.dao;
 
 import com.medicine.pojo.UploadFile;
 
+import java.util.List;
+
 public interface UploadFileMapper {
     int deleteByPrimaryKey(Integer id);
 
@@ -14,4 +16,6 @@ public interface UploadFileMapper {
     int updateByPrimaryKeySelective(UploadFile record);
 
     int updateByPrimaryKey(UploadFile record);
+
+    List<UploadFile> selectList();
 }

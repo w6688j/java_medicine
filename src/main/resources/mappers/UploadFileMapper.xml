@@ -116,4 +116,11 @@
       update_time = now()
     where id = #{id,jdbcType=INTEGER}
   </update>
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT
+        f.*,u.username
+        from medicine_upload_file f INNER JOIN medicine_user u
+        ON f.user_id = u.id
+        ORDER BY id desc
+    </select>
 </mapper>

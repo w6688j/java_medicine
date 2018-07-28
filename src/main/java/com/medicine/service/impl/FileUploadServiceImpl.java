@@ -1,5 +1,8 @@
 package com.medicine.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.medicine.common.Const;
 import com.medicine.common.ServerResponse;
@@ -9,6 +12,7 @@ import com.medicine.pojo.UploadFile;
 import com.medicine.pojo.User;
 import com.medicine.service.IFileUploadService;
 import com.medicine.util.MultipartFileUploadUtil;
+import com.medicine.vo.UploadFileListVo;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +25,7 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service("iFileUploadService")
@@ -101,6 +106,40 @@ public class FileUploadServiceImpl implements IFileUploadService {
 
             return null;
         }
+    }
+
+    @Override
+    public ServerResponse<PageInfo> getUploadFileList(int pageNum, int pageSize) {
+        //startPage--start
+        //填充自己的sql查询逻辑
+        //pageHelper-收尾
+        PageHelper.startPage(pageNum, pageSize);
+        List<UploadFile> uploadFilesList = uploadFileMapper.selectList();
+
+        List<UploadFileListVo> uploadFileListVoList = Lists.newArrayList();
+        for (UploadFile uploadFileItem : uploadFilesList) {
+            UploadFileListVo uploadFileListVo = assembleProductListVo(uploadFileItem);
+            uploadFileListVoList.add(uploadFileListVo);
+        }
+        PageInfo pageResult = new PageInfo(uploadFilesList);
+        pageResult.setList(uploadFileListVoList);
+
+        return ServerResponse.createBySuccess(pageResult);
+    }
+
+    private UploadFileListVo assembleProductListVo(UploadFile upload) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        UploadFileListVo uploadListVo = new UploadFileListVo();
+        uploadListVo.setId(upload.getId());
+        uploadListVo.setUserName(upload.getUserName());
+        uploadListVo.setFileName(upload.getFileName());
+        uploadListVo.setPath(upload.getPath());
+        uploadListVo.setSize(upload.getSize());
+        uploadListVo.setCreateTime(dateFormat.format(upload.getCreateTime()));
+        uploadListVo.setUpdateTime(dateFormat.format(upload.getUpdateTime()));
+
+        return uploadListVo;
     }
 
     private void handleUploadedFile(File file, String fileType, HttpSession session) {

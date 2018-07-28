@@ -147,4 +147,10 @@
         where email = #{email}
         and id != #{userId}
     </select>
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from medicine_user
+        ORDER BY id desc
+    </select>
 </mapper>

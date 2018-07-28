@@ -63,6 +63,15 @@ public class UserController {
         return iUserService.checkValid(str, type);
     }
 
+
+    @RequestMapping(value = "list.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse list(
+            @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        return iUserService.getUserList(pageNum, pageSize);
+    }
+
     @RequestMapping("upload2.do")
     @ResponseBody
     public ServerResponse upload2(@RequestParam(value = "upload_file", required = false) MultipartFile file, HttpServletRequest request) {

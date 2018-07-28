@@ -3,6 +3,8 @@ package com.medicine.dao;
 import com.medicine.pojo.User;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 public interface UserMapper {
     int deleteByPrimaryKey(Integer id);
 
@@ -23,4 +25,6 @@ public interface UserMapper {
     int checkEmail(String email);
 
     int checkEmailByUserId(@Param(value = "email") String email, @Param(value = "userId") Integer userId);
+
+    List<User> selectList();
 }

@@ -123,4 +123,9 @@
         ON f.user_id = u.id
         ORDER BY id desc
     </select>
+    <select id="uploadFIleCount" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        from medicine_upload_file
+    </select>
 </mapper>

@@ -27,4 +27,6 @@ public interface UserMapper {
     int checkEmailByUserId(@Param(value = "email") String email, @Param(value = "userId") Integer userId);
 
     List<User> selectList();
+
+    int userCount();
 }

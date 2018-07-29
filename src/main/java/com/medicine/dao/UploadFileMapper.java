@@ -18,4 +18,6 @@ public interface UploadFileMapper {
     int updateByPrimaryKey(UploadFile record);
 
     List<UploadFile> selectList();
+
+    int uploadFIleCount();
 }

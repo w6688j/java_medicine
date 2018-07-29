@@ -153,4 +153,9 @@
         from medicine_user
         ORDER BY id desc
     </select>
+    <select id="userCount" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        from medicine_user
+    </select>
 </mapper>

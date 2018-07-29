@@ -51,7 +51,6 @@ public class FTPUtil {
         if (connectService(this.ip, this.port, this.user, this.pwd)) {
             try {
                 // 设置上传目录(没有则创建)
-                System.out.println(remotePath);
                 this.createDir(remotePath);
                 ftpClient.setBufferSize(1024);
                 ftpClient.setControlEncoding("UTF-8");

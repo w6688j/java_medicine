@@ -165,7 +165,6 @@ public class FileUploadServiceImpl implements IFileUploadService {
     private void ftpUpload(UploadFile uploadFile) {
         File localFile = new File(uploadFile.getPath());
         File targetFile = new File(localFile.getParent(), localFile.getName());
-        System.out.println("targetFile " + "upload/" + this.getPathByDate());
         try {
             FTPUtil.uploadFile(Lists.newArrayList(targetFile), "upload/" + this.getPathByDate());
         } catch (IOException e) {

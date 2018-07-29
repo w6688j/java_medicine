@@ -71,18 +71,4 @@ public class UserController {
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
         return iUserService.getUserList(pageNum, pageSize);
     }
-
-    @RequestMapping("upload2.do")
-    @ResponseBody
-    public ServerResponse upload2(@RequestParam(value = "upload_file", required = false) MultipartFile file, HttpServletRequest request) {
-        String path = request.getSession().getServletContext().getRealPath("upload");
-        String targetFileName = iFileService.upload(file, path);
-        String url = PropertiesUtil.getProperty("ftp.server.http.prefix") + targetFileName;
-
-        Map fileMap = Maps.newHashMap();
-        fileMap.put("uri", targetFileName);
-        fileMap.put("url", url);
-
-        return ServerResponse.createBySuccess(fileMap);
-    }
 }

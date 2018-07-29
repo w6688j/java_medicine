@@ -2,17 +2,21 @@ package com.medicine.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.medicine.common.Const;
+import com.medicine.common.ResponseCode;
 import com.medicine.common.ServerResponse;
 import com.medicine.controller.portal.request.MultipartFileParam;
 import com.medicine.dao.UploadFileMapper;
 import com.medicine.pojo.UploadFile;
 import com.medicine.pojo.User;
 import com.medicine.service.IFileUploadService;
+import com.medicine.util.FTPUtil;
 import com.medicine.util.MultipartFileUploadUtil;
 import com.medicine.vo.UploadFileListVo;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +26,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -142,6 +147,32 @@ public class FileUploadServiceImpl implements IFileUploadService {
         return uploadListVo;
     }
 
+    @Override
+    public ServerResponse<String> ftpUpload(String fileIds) {
+        List<String> fileList = Splitter.on(",").splitToList(fileIds);
+        if (CollectionUtils.isEmpty(fileList)) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(), ResponseCode.ILLEGAL_ARGUMENT.getDesc());
+        }
+        List<UploadFile> uploadFileList = uploadFileMapper.getFileListByFileIds(fileList);
+
+        for (UploadFile uploadFile : uploadFileList) {
+            this.ftpUpload(uploadFile);
+        }
+
+        return ServerResponse.createBySuccess("上传成功");
+    }
+
+    private void ftpUpload(UploadFile uploadFile) {
+        File localFile = new File(uploadFile.getPath());
+        File targetFile = new File(localFile.getParent(), localFile.getName());
+        System.out.println("targetFile " + "upload/" + this.getPathByDate());
+        try {
+            FTPUtil.uploadFile(Lists.newArrayList(targetFile), "upload/" + this.getPathByDate());
+        } catch (IOException e) {
+            logger.error("ftp上传错误", e);
+        }
+    }
+
     private void handleUploadedFile(File file, String fileType, HttpSession session) {
         try {
             File uploadDir = new File(this.getNewFileDir());
@@ -166,11 +197,16 @@ public class FileUploadServiceImpl implements IFileUploadService {
         }
     }
 
-    private String getNewFileDir() {
+    private String getPathByDate() {
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        return "/developer/apache-tomcat-7.0.73/uploads/" + dateFormat.format(date);
+        return dateFormat.format(date) + "/";
+    }
+
+    private String getNewFileDir() {
+
+        return "/developer/apache-tomcat-7.0.73/uploads/" + this.getPathByDate();
     }
 
     private String getNewFileName(String fileType) {

@@ -35,10 +35,10 @@ public class FTPUtil {
         this.pwd = pwd;
     }
 
-    public static boolean uploadFile(List<File> fileList) throws IOException {
+    public static boolean uploadFile(List<File> fileList, String remotePath) throws IOException {
         FTPUtil ftpUtil = new FTPUtil(ftpIp, 21, ftpUser, ftpPass);
         logger.info("开始连接FTP服务器");
-        boolean result = ftpUtil.uploadFile("img", fileList);
+        boolean result = ftpUtil.uploadFile(remotePath, fileList);
         logger.info("结束上传，上传结果：{}");
 
         return result;
@@ -50,7 +50,9 @@ public class FTPUtil {
         //链接FTP服务器
         if (connectService(this.ip, this.port, this.user, this.pwd)) {
             try {
-                ftpClient.changeWorkingDirectory(remotePath);
+                // 设置上传目录(没有则创建)
+                System.out.println(remotePath);
+                this.createDir(remotePath);
                 ftpClient.setBufferSize(1024);
                 ftpClient.setControlEncoding("UTF-8");
                 ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
@@ -84,6 +86,46 @@ public class FTPUtil {
         }
 
         return isSuccess;
+    }
+
+    /**
+     * 创建目录(有则切换目录，没有则创建目录)
+     */
+    public boolean createDir(String dir) {
+        if (dir.isEmpty())
+            return false;
+        String d;
+        try {
+            //目录编码，解决中文路径问题
+            d = new String(dir.toString().getBytes("GBK"), "iso-8859-1");
+            //尝试切入目录
+            if (ftpClient.changeWorkingDirectory(d))
+                return true;
+
+            String[] arr = dir.split("/");
+            StringBuffer sbfDir = new StringBuffer();
+            //循环生成子目录
+            for (String s : arr) {
+                sbfDir.append("/");
+                sbfDir.append(s);
+                //目录编码，解决中文路径问题
+                d = new String(sbfDir.toString().getBytes("GBK"), "iso-8859-1");
+                //尝试切入目录
+                if (ftpClient.changeWorkingDirectory(d))
+                    continue;
+                if (!ftpClient.makeDirectory(d)) {
+                    System.out.println("[失败]ftp创建目录：" + sbfDir.toString());
+                    return false;
+                }
+                System.out.println("[成功]创建ftp目录：" + sbfDir.toString());
+            }
+
+            //将目录切换至指定路径
+            return ftpClient.changeWorkingDirectory(d);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public String getIp() {

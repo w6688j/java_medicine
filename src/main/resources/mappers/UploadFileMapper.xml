@@ -128,4 +128,15 @@
         count(1)
         from medicine_upload_file
     </select>
+    <select id="getFileListByFileIds" parameterType="map" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from medicine_upload_file
+        <if test="fileIdList != null">
+            where id in
+            <foreach collection="fileIdList" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
 </mapper>

@@ -1,6 +1,7 @@
 package com.medicine.dao;
 
 import com.medicine.pojo.UploadFile;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -20,4 +21,6 @@ public interface UploadFileMapper {
     List<UploadFile> selectList();
 
     int uploadFIleCount();
+
+    List<UploadFile> getFileListByFileIds(@Param("fileIdList") List<String> fileIdList);
 }

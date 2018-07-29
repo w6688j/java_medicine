@@ -10,4 +10,6 @@ public interface IFileUploadService {
     ServerResponse<String> upload(HttpServletRequest request, HttpSession session);
 
     ServerResponse<PageInfo> getUploadFileList(int pageNum, int pageSize);
+
+    ServerResponse<String> ftpUpload(String fileIds);
 }
